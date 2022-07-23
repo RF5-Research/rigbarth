@@ -5,9 +5,7 @@
 #include <iostream>
 #include "il2cpp-appdata.h"
 #include "helpers.h"
-#include "advScript.h"
-#include "conditionsForLoverJudgment.h"
-
+#include "hooks/hooks.h"
 using namespace app;
 
 // Set the name of your log file here

@@ -16,14 +16,14 @@
     <ClCompile Include="framework\pch-il2cpp.cpp">
       <Filter>framework</Filter>
     </ClCompile>
-    <ClCompile Include="user\advScript.cpp">
-      <Filter>user</Filter>
-    </ClCompile>
-    <ClCompile Include="user\conditionsForLoverJudgment.cpp">
-      <Filter>user</Filter>
-    </ClCompile>
     <ClCompile Include="utils\string.cpp">
       <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="user\hooks\advScript.cpp">
+      <Filter>user\hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="user\hooks\conditionsForLoverJudgment.cpp">
+      <Filter>user\hooks</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -60,14 +60,11 @@
     <ClInclude Include="framework\pch-il2cpp.h">
       <Filter>framework</Filter>
     </ClInclude>
-    <ClInclude Include="user\advScript.h">
-      <Filter>user</Filter>
-    </ClInclude>
-    <ClInclude Include="user\conditionsForLoverJudgment.h">
-      <Filter>user</Filter>
-    </ClInclude>
     <ClInclude Include="utils\utils.h">
       <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="user\hooks\hooks.h">
+      <Filter>user\hooks</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -80,11 +77,11 @@
     <Filter Include="user">
       <UniqueIdentifier>{aab7e1fd-06b0-4022-b5b0-f089612de3c4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="hooks">
-      <UniqueIdentifier>{0b1b5cdd-0904-4b6b-9276-930185c9bc4b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="utils">
       <UniqueIdentifier>{8682bd30-3ca5-4ccb-a052-a5ddcca3478f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="user\hooks">
+      <UniqueIdentifier>{caa11e9a-cf1e-4f1a-808f-c64c11a289ad}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

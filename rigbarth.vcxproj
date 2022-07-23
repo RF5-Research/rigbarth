@@ -38,8 +38,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="user\advScript.cpp" />
-    <ClCompile Include="user\conditionsForLoverJudgment.cpp" />
+    <ClCompile Include="user\hooks\advScript.cpp" />
+    <ClCompile Include="user\hooks\conditionsForLoverJudgment.cpp" />
     <ClCompile Include="user\main.cpp" />
     <ClCompile Include="utils\string.cpp" />
   </ItemGroup>
@@ -54,8 +54,7 @@
     <ClInclude Include="framework\il2cpp-appdata.h" />
     <ClInclude Include="framework\il2cpp-init.h" />
     <ClInclude Include="framework\pch-il2cpp.h" />
-    <ClInclude Include="user\advScript.h" />
-    <ClInclude Include="user\conditionsForLoverJudgment.h" />
+    <ClInclude Include="user\hooks\hooks.h" />
     <ClInclude Include="user\main.h" />
     <ClInclude Include="utils\utils.h" />
   </ItemGroup>

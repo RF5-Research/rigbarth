@@ -4,3 +4,8 @@ namespace conditionsForLoverJudgement
 {
 	void InstallHooks();
 }
+
+namespace advScript
+{
+	void InstallHooks();
+}
