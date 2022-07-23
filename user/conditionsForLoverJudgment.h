@@ -1,6 +1,6 @@
 #pragma once
 
-namespace advScript
+namespace conditionsForLoverJudgement
 {
 	void InstallHooks();
 }

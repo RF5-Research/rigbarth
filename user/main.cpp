@@ -6,6 +6,8 @@
 #include "il2cpp-appdata.h"
 #include "helpers.h"
 #include "advScript.h"
+#include "conditionsForLoverJudgment.h"
+
 using namespace app;
 
 // Set the name of your log file here
@@ -25,4 +27,5 @@ void Run()
 
     // Place your custom code here
     advScript::InstallHooks();
+    conditionsForLoverJudgement::InstallHooks();
 }

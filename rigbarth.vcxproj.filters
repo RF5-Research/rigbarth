@@ -19,6 +19,12 @@
     <ClCompile Include="user\advScript.cpp">
       <Filter>user</Filter>
     </ClCompile>
+    <ClCompile Include="user\conditionsForLoverJudgment.cpp">
+      <Filter>user</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\string.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="user\main.h">
@@ -57,6 +63,12 @@
     <ClInclude Include="user\advScript.h">
       <Filter>user</Filter>
     </ClInclude>
+    <ClInclude Include="user\conditionsForLoverJudgment.h">
+      <Filter>user</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\utils.h">
+      <Filter>utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="appdata">
@@ -68,8 +80,11 @@
     <Filter Include="user">
       <UniqueIdentifier>{aab7e1fd-06b0-4022-b5b0-f089612de3c4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="hooks">
+      <UniqueIdentifier>{0b1b5cdd-0904-4b6b-9276-930185c9bc4b}</UniqueIdentifier>
+    </Filter>
     <Filter Include="utils">
-      <UniqueIdentifier>{d45a775e-4391-4ee6-a18b-0c681b795345}</UniqueIdentifier>
+      <UniqueIdentifier>{8682bd30-3ca5-4ccb-a052-a5ddcca3478f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
