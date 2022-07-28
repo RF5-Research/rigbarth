@@ -33,3 +33,15 @@ DO_APP_FUNC(0x00D36F30, void, EventControllerBase_EventStart, (EventControllerBa
 DO_APP_FUNC(0x00D38AD0, bool, EventControllerBase_ForceEventStart, (EventControllerBase* __this, String* scriptName, MethodInfo* method));
 DO_APP_FUNC(0x0089C1F0, Type*, Object_GetType, (Object* __this, MethodInfo* method));
 DO_APP_FUNC(0x009C1F00, Type*, Type_GetType_2, (String* typeName, MethodInfo* method));
+DO_APP_FUNC_METHODINFO(0x0302B200, Enum_TryParse_3__MethodInfo);
+DO_APP_FUNC(0x0057BB40, String*, Enum_ToString, (Enum__Boxed* __this, MethodInfo* method));
+DO_APP_FUNC(0x00578090, String*, Enum_GetName, (Type* enumType, Object* value, MethodInfo* method));
+DO_APP_FUNC(0x003B8000, void, EventUnlockFlagData__ctor, (EventUnlockFlagData* __this, MethodInfo* method));
+DO_APP_FUNC(0x011EBE20, EventUnlockFlagData*, EventFlagManager_GetNextEventUnlockData, (EventFlagManager* __this, EventScriptID__Enum scriptId, MethodInfo* method));
+DO_APP_FUNC(0x00D28440, Object*, JsonUtility_FromJson, (String* json, Type* type, MethodInfo* method));
+DO_APP_FUNC_METHODINFO(0x03047108, JsonUtility_FromJson__MethodInfo);
+DO_APP_FUNC_METHODINFO(0x0301F0E8, SingletonMonoBehaviour_1_EventControllerBase__get_Instance__MethodInfo);
+DO_APP_FUNC(0x01B59BE0, EventControllerBase*, SingletonMonoBehaviour_1_EventControllerBase__get_Instance, (MethodInfo* method));
+DO_APP_FUNC(0x00D56200, EventFlagManager*, EventControllerBase_get_FlagManager, (EventControllerBase* __this, MethodInfo* method));
+DO_APP_FUNC(0x011EE110, void, EventFlagManager_Start, (EventFlagManager* __this, MethodInfo* method));
+DO_APP_FUNC(0x0057BDB0, bool, Enum_TryParseEnum, (Type* enumType, String* value, bool ignoreCase, Enum_EnumResult* parseResult, MethodInfo* method));

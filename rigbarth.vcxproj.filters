@@ -66,6 +66,9 @@
     <ClInclude Include="user\hooks\hooks.h">
       <Filter>user\hooks</Filter>
     </ClInclude>
+    <ClInclude Include="user\hooks\advScript.h">
+      <Filter>user\hooks</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="appdata">

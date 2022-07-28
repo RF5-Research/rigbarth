@@ -9,23 +9,31 @@
 #include <polyhook2/Detour/x64Detour.hpp>
 #include <polyhook2/CapstoneDisassembler.hpp>
 #include <map>
-#include <thread>
+#include <future>
 #include <cstring>
+#include <nlohmann/json.hpp>
+#include "advScript.h"
 
+using json = nlohmann::json;
 using namespace app;
 
+// Pass our new strings to TryParse to see if id exists and use that. If not, gen new id
 namespace advScript
 {
 	std::map<std::string, int> Scripts;
-	const char* scriptPath = "rigbarth/AdvScripts";
+	std::map<std::string, int> EventScripts;
+	std::map<std::string, int> GameFlagData;
+	const char* rigbarthPath = "rigbarth";
+
+	//New GameFlagData directory
 	void LoadScripts()
 	{
 		Scripts = std::map<std::string, int>();
 		auto scripts = (*AdvScriptReader__TypeInfo)->static_fields->Scripts;
 		int32_t index = scripts->fields._size;
-		auto add = (int32_t (*)(List_1_System_Byte__1*, Byte__Array * item, MethodInfo*))scripts->klass->vtable.Add.methodPtr;
+		auto add = reinterpret_cast<void (*)(List_1_System_Byte__1*, Byte__Array * item, MethodInfo*)>(scripts->klass->vtable.Add.methodPtr);
 		auto add_MethodInfo = scripts->klass->vtable.Add.method;
-		auto dir = std::filesystem::absolute(scriptPath);
+		auto dir = std::filesystem::absolute(std::format("{}/AdvScripts", rigbarthPath));
 		if (std::filesystem::exists(dir))
 		{
 			for (const auto& dirEntry : std::filesystem::recursive_directory_iterator::recursive_directory_iterator(dir))
@@ -35,11 +43,10 @@ namespace advScript
 					auto scriptPath = dirEntry.path();
 					if (utils::string::iequals(scriptPath.extension().generic_string(), ".advScript"))
 					{
-						std::ifstream file(scriptPath.generic_string(), std::ios::binary);
+						std::ifstream file(scriptPath, std::ios::binary);
 						std::vector<uint8_t> bytes(
 							(std::istreambuf_iterator<char>(file)),
 							(std::istreambuf_iterator<char>()));
-						file.close();
 
 						//Won't work due to not being initialized yet
 						//auto type = il2cpp_class_get_type((Il2CppClass*)*Byte__TypeInfo);
@@ -49,10 +56,132 @@ namespace advScript
 						auto array = (Byte__Array*)Array_CreateInstance_1(type, static_cast<int32_t>(bytes.size()), nullptr);
 						
 						std::copy(bytes.begin(), bytes.end(), array->vector);
-						add(scripts, array, (MethodInfo*)add_MethodInfo);
+						add(scripts, array, const_cast<MethodInfo*>(add_MethodInfo));
 						auto scriptName = scriptPath.stem().generic_string();
 						std::transform(scriptName.begin(), scriptName.end(), scriptName.begin(), ::toupper);
 						Scripts.insert(std::pair<std::string, int>(scriptName, index++));
+					}
+				}
+			}
+		}
+	}
+
+	void LoadEventUnlockData(EventFlagManager* eventFlagManager)
+	{
+		EventScripts = std::map<std::string, int>();
+		auto dir = std::filesystem::absolute(std::format("{}/EventUnlockData", rigbarthPath));
+		auto eventUnlockFlagData = eventFlagManager->fields.EventUnlockFlagDatas->fields.datas;
+		//This is not a surefire way of getting unused indices, but it still works
+		//TODO: iterate through all items and find highest ID
+		int32_t index = eventUnlockFlagData->fields._size;
+
+		auto add = reinterpret_cast<void (*)(List_1_EventUnlockFlagData_*, app::EventUnlockFlagData* item, MethodInfo*)>(eventUnlockFlagData->klass->vtable.Add.methodPtr);
+		auto add_MethodInfo = eventUnlockFlagData->klass->vtable.Add.method;
+
+		auto gameFlagDataType = Type_GetType_2(reinterpret_cast<String*>(il2cpp_string_new("Define.GameFlagData, Assembly-CSharp")), nullptr);
+		auto eventUnlockFlagDataType = Type_GetType_2(reinterpret_cast<String*>(il2cpp_string_new("EventUnlockFlagData, Assembly-CSharp")), nullptr);
+
+		if (std::filesystem::exists(dir))
+		{
+			for (const auto& dirEntry : std::filesystem::recursive_directory_iterator::recursive_directory_iterator(dir))
+			{
+				if (dirEntry.is_regular_file())
+				{
+					auto path = dirEntry.path();
+					if (utils::string::iequals(path.extension().generic_string(), ".json"))
+					{
+						std::ifstream file(path);
+						auto json = json::parse(file, nullptr, false);
+						if (json.is_discarded())
+						{
+							printf("Invalid JSON: %s\n", path.generic_string().c_str());
+							continue;
+						}
+						for (int i = 0; i < json.size(); i++)
+						{
+							std::string scriptName;
+							scriptName = json[i]["ScriptId"].get<std::string>();
+							std::transform(scriptName.begin(), scriptName.end(), scriptName.begin(), ::tolower);
+
+							//Check if already added to our map
+							//Nobody should really be using preexisting names
+							auto pos = EventScripts.find(scriptName);
+							if (pos != EventScripts.end())
+							{
+								json[i]["ScriptId"] = pos->second;
+							}
+							//If not, continue
+							else
+							{
+								json[i]["ScriptId"] = index;
+								EventScripts.insert(std::pair<std::string, int>(scriptName, index));
+							}
+
+							//for (int ii = 0; ii < json[i]["On"].size(); ii++)
+							//{
+							//	auto on = json[i][ii]["On"];
+							//	if (on[ii].is_string())
+							//	{
+							//		auto value = on.get<std::string>();
+							//		auto pos = GameFlagData.find(value);
+							//		if (pos != GameFlagData.end())
+							//		{
+							//			printf("Found GameFlagData: %s\n", value.c_str());
+							//			entry["On"] = pos->second;
+							//		}
+							//		else
+							//		{
+							//			printf("Failed to find GameFlagData: %s\n", value.c_str());
+							//			continue;
+							//		}
+							//	}
+							//}
+
+							//Enum_EnumResult result = {};
+							////If preexisting EventScriptId, use it instead
+							////This feels like a really bad idea
+							////Maybe allow user to describe their custom enums
+							////Load that and just check against custom map before trying to parse
+							////As this could be slow
+							//if (Enum_TryParseEnum(
+							//		eventScriptIDType,
+							//		reinterpret_cast<String*>(il2cpp_string_new(scriptName.c_str())),
+							//		false,
+							//		&result,
+							//		nullptr
+							//	)
+							//)
+							//{
+							//	json[i]["ScriptId"] = static_cast<int32_t>(reinterpret_cast<EventScriptID__Enum__Boxed*>(result.parsedEnum)->value;
+							//}
+							//else
+							//{
+							//	auto pos = EventScripts.find(scriptName);
+							//	//Check if already added to our map
+							//	if (pos != EventScripts.end())
+							//	{
+							//		json[i]["ScriptId"] = pos->second;
+							//	}
+							//	//If not, continue
+							//	else
+							//	{
+							//		json[i]["ScriptId"] = index;
+							//		EventScripts.insert(std::pair<std::string, int>(scriptName, index));
+							//	}
+							//}
+
+							json[i]["PointActive"] = json[i]["PointActive"].get<bool>() ? 1 : 0;
+							EventUnlockFlagData* object = reinterpret_cast<EventUnlockFlagData*>(
+								JsonUtility_FromJson(
+									reinterpret_cast<String*>(
+										il2cpp_string_new(json[i].dump().c_str())
+									),
+									eventUnlockFlagDataType,
+									nullptr
+							));
+							add(eventUnlockFlagData, object, const_cast<MethodInfo*>(add_MethodInfo));
+							index++;
+						}
 					}
 				}
 			}
@@ -68,25 +197,111 @@ namespace advScript
 		return result;
 	}
 
-	uint64_t Tramp_Enum_TryParse;
-	NOINLINE bool __cdecl Hook_Enum_TryParse(String* value, int32_t* null, int32_t* result)
+	uint64_t Tramp_Enum_TryParse_AdvScriptID;
+	NOINLINE bool __cdecl Hook_Enum_TryParse_AdvScriptID(String* value, int32_t* null, int32_t* result)
 	{
-		auto success = PLH::FnCast(Tramp_Enum_TryParse, Hook_Enum_TryParse)(value, null, result);
+		auto success = PLH::FnCast(Tramp_Enum_TryParse_AdvScriptID, Hook_Enum_TryParse_AdvScriptID)(value, null, result);
+		auto enumString = il2cppi_to_string(value);
+
 		if (!success)
 		{ 
-			auto enumString = il2cppi_to_string(value);
 			auto pos = Scripts.find(enumString);
 			if (pos != Scripts.end())
 			{
-				printf("Loading AdvScript: %s\n", enumString.c_str());
+				printf("Found AdvScript: %s\n", enumString.c_str());
 				*result = pos->second;
 				return 1;
 			}
+			else
+			{
+				printf("Failed to find AdvScript: %s\n", enumString.c_str());
+				return success;
+			}
 		}
+		printf("Loading builtin AdvScript: %s\n", enumString.c_str());
 		return success;
 	}
 
-	//Put this in its own class
+	uint64_t Tramp_Enum_TryParse_EventScriptID;
+	NOINLINE bool __cdecl Hook_Enum_TryParse_EventScriptID(String* value, int32_t* null, int32_t* result)
+	{
+		auto success = PLH::FnCast(Tramp_Enum_TryParse_EventScriptID, Hook_Enum_TryParse_EventScriptID)(value, null, result);
+		auto enumString = il2cppi_to_string(value);
+		if (!success)
+		{
+			auto pos = EventScripts.find(enumString);
+			if (pos != EventScripts.end())
+			{
+				printf("Found EventScript: %s\n", enumString.c_str());
+				*result = pos->second;
+				return 1;
+			}
+			else
+			{
+				printf("Failed to find EventScript: %s\n", enumString.c_str());
+				return success;
+			}
+		}
+		printf("Loading builtin EventScript: %s\n", enumString.c_str());
+		return success;
+	}
+
+
+	//uint64_t Tramp_GameFlagData__Enum__ToString;
+	//NOINLINE String* __cdecl Hook_GameFlagData__Enum__ToString(Enum__Boxed* __this, MethodInfo* method)
+	//{
+	//	auto value = PLH::FnCast(Tramp_GameFlagData__Enum__ToString, Hook_GameFlagData__Enum__ToString)(__this, method);
+	//	auto enumString = il2cppi_to_string(value);
+	//	printf("Getting Flag %s\n", enumString.c_str());
+
+	//	if (!std::any_of(enumString.begin(), enumString.end(), isalpha))
+	//	{
+	//		auto id = std::stoi(enumString);
+	//		for (auto it = EventScripts.begin(); it != EventScripts.end(); ++it)
+	//		{
+	//			if (it->second == id)
+	//			{
+	//				printf("Found EventScript %s: %d\n", it->first.c_str(), id);
+	//				return reinterpret_cast<String*>(il2cpp_string_new(it->first.c_str()));
+	//			}
+	//		}
+	//		printf("Failed to find EventScript %s: %d\n", enumString.c_str(), id);
+	//	}
+	//	return value;
+	//}
+
+	uint64_t Tramp_EventScriptId__Enum__ToString;
+	NOINLINE String* __cdecl Hook_EventScriptId__Enum__ToString(Enum__Boxed* __this, MethodInfo* method)
+	{
+		auto value = PLH::FnCast(Tramp_EventScriptId__Enum__ToString, Hook_EventScriptId__Enum__ToString)(__this, method);
+		auto enumString = il2cppi_to_string(value);
+		if (!std::any_of(enumString.begin(), enumString.end(), isalpha))
+		{
+			auto id = std::stoi(enumString);
+			for (auto it = EventScripts.begin(); it != EventScripts.end(); ++it)
+			{
+				if (it->second == id)
+				{
+					printf("Found EventScript %s:\n", it->first.c_str());
+					return reinterpret_cast<String*>(il2cpp_string_new(it->first.c_str()));
+				}
+			}
+			printf("Failed to find EventScript %s:\n", enumString.c_str());
+		}
+		return value;
+	}
+
+	PLH::x64Detour* Detour_EventFlagManager_Start;
+	uint64_t Tramp_EventFlagManager_Start;
+	NOINLINE void __cdecl Hook_EventFlagManager_Start(EventFlagManager* __this, MethodInfo* method)
+	{
+		PLH::FnCast(Tramp_EventFlagManager_Start, Hook_EventFlagManager_Start)(__this, method);
+		LoadEventUnlockData(__this);
+		//Call again to initialize with our own data
+		//TODO: Figure out what exactly they do as this is a bit hacky
+		PLH::FnCast(Tramp_EventFlagManager_Start, Hook_EventFlagManager_Start)(__this, method);
+		Detour_EventFlagManager_Start->unHook();
+	}
 
 	void InstallHooks()
 	{
@@ -100,20 +315,112 @@ namespace advScript
 		);
 		detour_AdvScriptReader_Init_d_4_MoveNext->hook();
 
-		//Don't hook generic method
-		//Unfortunately, the methodinfo isn't lazy init yet
-		std::thread hook([]() -> void
+		Detour_EventFlagManager_Start = new PLH::x64Detour(
+			reinterpret_cast<char*>(EventFlagManager_Start),
+			reinterpret_cast<char*>(Hook_EventFlagManager_Start),
+			&Tramp_EventFlagManager_Start,
+			dis
+		);
+		Detour_EventFlagManager_Start->hook();
+		
+		
+		auto task_LoadGameFlagData = std::async(std::launch::async, []() -> void
+		{
+			//Hardcoding as easier
+			GameFlagData = std::map<std::string, int>();
+			auto index = static_cast<int32_t>(GameFlagData__Enum::Max);
+			auto dir = std::filesystem::absolute(std::format("{}/GameFlagData", rigbarthPath));
+			for (const auto& dirEntry : std::filesystem::recursive_directory_iterator::recursive_directory_iterator(dir))
 			{
-				while (true)
+				if (dirEntry.is_regular_file())
 				{
-					if (il2cppi_is_initialized(Enum_TryParse_1__MethodInfo) && (*Enum_TryParse_1__MethodInfo)->Il2CppVariant.rgctx_data->method->methodPointer)
+					auto path = dirEntry.path();
+					if (utils::string::iequals(path.extension().generic_string(), ".json"))
 					{
-						Tramp_Enum_TryParse = uint64_t((*Enum_TryParse_1__MethodInfo)->Il2CppVariant.rgctx_data->method->methodPointer);
-						const_cast<MethodInfo*>((*Enum_TryParse_1__MethodInfo)->Il2CppVariant.rgctx_data->method)->methodPointer = reinterpret_cast<Il2CppMethodPointer >(&Hook_Enum_TryParse);
-						break;
+						std::ifstream file(path);
+						auto json = json::parse(file, nullptr, false);
+						if (json.is_discarded())
+						{
+							printf("Invalid JSON: %s\n", path.generic_string().c_str());
+							continue;
+						}
+						for (int i = 0; i < json.size(); i++)
+						{
+							if (json[i].is_string())
+							{
+								auto gameFlagData = json[i].get<std::string>();
+								auto pos = GameFlagData.find(gameFlagData);
+								//If already exists
+								if (pos != GameFlagData.end())
+								{
+									printf("WARNING: Found duplicate GameFlagData: %s", gameFlagData.c_str());
+								}
+								else
+								{
+									GameFlagData.insert(std::pair<std::string, int>(gameFlagData, index++));
+								}
+							}
+							else
+							{
+								printf("Error in %s\n", path.generic_string().c_str());
+								printf("Couldn't parse:\n%s\n", json[i].dump().c_str());
+							}
+						}
 					}
 				}
-			});
-		hook.join();
+			}
+		});
+
+		auto task_Enum_TryParse_AdvScriptID = std::async(std::launch::async, []() -> void
+		{
+			while (true)
+			{
+				if (il2cppi_is_initialized(Enum_TryParse_1__MethodInfo))
+				{
+					Tramp_Enum_TryParse_AdvScriptID = uint64_t((*Enum_TryParse_1__MethodInfo)->Il2CppVariant.rgctx_data->method->methodPointer);
+					const_cast<MethodInfo*>((*Enum_TryParse_1__MethodInfo)->Il2CppVariant.rgctx_data->method)->methodPointer = reinterpret_cast<Il2CppMethodPointer>(&Hook_Enum_TryParse_AdvScriptID);
+					break;
+				}
+			}
+		});
+
+		auto task_EventScriptId__Enum__ToString = std::async(std::launch::async, []() -> void
+		{
+			while (true)
+			{
+				if (il2cppi_is_initialized(EventScriptID__Enum__TypeInfo))
+				{
+					Tramp_EventScriptId__Enum__ToString = uint64_t((*EventScriptID__Enum__TypeInfo)->vtable.ToString.methodPtr);
+					(*EventScriptID__Enum__TypeInfo)->vtable.ToString.methodPtr = reinterpret_cast<Il2CppMethodPointer>(&Hook_EventScriptId__Enum__ToString);
+					break;
+				}
+			}
+		});
+
+		//auto task_GameFlagData__Enum__ToString = std::async(std::launch::async, []() -> void
+		//{
+		//	while (true)
+		//	{
+		//		if (il2cppi_is_initialized(GameFlagData__Enum__TypeInfo))
+		//		{
+		//			Tramp_GameFlagData__Enum__ToString = uint64_t((*GameFlagData__Enum__TypeInfo)->vtable.ToString.methodPtr);
+		//			(*GameFlagData__Enum__TypeInfo)->vtable.ToString.methodPtr = reinterpret_cast<Il2CppMethodPointer>(&Hook_GameFlagData__Enum__ToString);
+		//			break;
+		//		}
+		//	}
+		//});
+
+		auto task_Enum_TryParse_EventScriptID = std::async(std::launch::async, []() -> void
+		{
+			while (true)
+			{
+				if (il2cppi_is_initialized(Enum_TryParse_3__MethodInfo))
+				{
+					Tramp_Enum_TryParse_EventScriptID = uint64_t((*Enum_TryParse_3__MethodInfo)->Il2CppVariant.rgctx_data->method->methodPointer);
+					const_cast<MethodInfo*>((*Enum_TryParse_3__MethodInfo)->Il2CppVariant.rgctx_data->method)->methodPointer = reinterpret_cast<Il2CppMethodPointer>(&Hook_Enum_TryParse_EventScriptID);
+					break;
+				}
+			}
+		});
 	}
 }

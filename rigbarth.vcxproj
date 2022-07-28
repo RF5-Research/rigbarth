@@ -54,6 +54,7 @@
     <ClInclude Include="framework\il2cpp-appdata.h" />
     <ClInclude Include="framework\il2cpp-init.h" />
     <ClInclude Include="framework\pch-il2cpp.h" />
+    <ClInclude Include="user\hooks\advScript.h" />
     <ClInclude Include="user\hooks\hooks.h" />
     <ClInclude Include="user\main.h" />
     <ClInclude Include="utils\utils.h" />
@@ -165,6 +166,8 @@
       <AdditionalIncludeDirectories>$(ProjectDir)appdata;$(ProjectDir)framework;$(ProjectDir)user;$(ProjectDir)utils</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -215,6 +218,8 @@
       <AdditionalIncludeDirectories>$(ProjectDir)appdata;$(ProjectDir)framework;$(ProjectDir)user;$(ProjectDir)utils</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
