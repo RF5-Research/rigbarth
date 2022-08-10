@@ -17,15 +17,33 @@
 using json = nlohmann::json;
 using namespace app;
 
-// Pass our new strings to TryParse to see if id exists and use that. If not, gen new id
 namespace advScript
 {
 	std::map<std::string, int> Scripts;
 	std::map<std::string, int> EventScripts;
 	std::map<std::string, int> GameFlagData;
+	std::vector<int> MarriagableCandidates;
+
 	const char* rigbarthPath = "rigbarth";
 
-	//New GameFlagData directory
+	void ResolveGameFlagData(json* data, const char* fieldName, const char* scriptName)
+	{
+		if (data->is_string())
+		{
+			auto value = data->get<std::string>();
+			auto pos = GameFlagData.find(value);
+			if (pos != GameFlagData.end())
+			{
+				printf("Resolved `%s`: `%s`'s `%s` GameDataFlag\n", scriptName, fieldName, value.c_str());
+				*data = pos->second;
+			}
+			else
+			{
+				printf("Failed to resolve %s: `%s`'s `%s` GameDataFlag\n", scriptName, fieldName, value.c_str());
+			}
+		}
+	}
+
 	void LoadScripts()
 	{
 		Scripts = std::map<std::string, int>();
@@ -71,15 +89,24 @@ namespace advScript
 		EventScripts = std::map<std::string, int>();
 		auto dir = std::filesystem::absolute(std::format("{}/EventUnlockData", rigbarthPath));
 		auto eventUnlockFlagData = eventFlagManager->fields.EventUnlockFlagDatas->fields.datas;
-		//This is not a surefire way of getting unused indices, but it still works
-		//TODO: iterate through all items and find highest ID
-		int32_t index = eventUnlockFlagData->fields._size;
+		auto index = static_cast<int32_t>(EventScriptID__Enum::Max);
 
 		auto add = reinterpret_cast<void (*)(List_1_EventUnlockFlagData_*, app::EventUnlockFlagData* item, MethodInfo*)>(eventUnlockFlagData->klass->vtable.Add.methodPtr);
 		auto add_MethodInfo = eventUnlockFlagData->klass->vtable.Add.method;
 
 		auto gameFlagDataType = Type_GetType_2(reinterpret_cast<String*>(il2cpp_string_new("Define.GameFlagData, Assembly-CSharp")), nullptr);
 		auto eventUnlockFlagDataType = Type_GetType_2(reinterpret_cast<String*>(il2cpp_string_new("EventUnlockFlagData, Assembly-CSharp")), nullptr);
+
+		const char* ScriptIdFieldName = "ScriptId";
+		const char* PointOnFlagFieldName = "PointOnFlag";
+		const char* StoryFlagFieldName = "StoryFlag";
+		const char* OnFieldName = "On";
+		const char* OffFieldName = "Off";
+		const char* NpcOnFieldName = "NpcOn";
+		const char* NpcOffFieldName = "NpcOff";
+		const char* FlagOnFieldName = "FlagOn";
+		const char* FlagOffFieldName = "FlagOff";
+		const char* PointActiveFieldName = "PointActive";
 
 		if (std::filesystem::exists(dir))
 		{
@@ -99,8 +126,9 @@ namespace advScript
 						}
 						for (int i = 0; i < json.size(); i++)
 						{
+							auto item = &json[i];
 							std::string scriptName;
-							scriptName = json[i]["ScriptId"].get<std::string>();
+							scriptName = item->at(ScriptIdFieldName).get<std::string>();
 							std::transform(scriptName.begin(), scriptName.end(), scriptName.begin(), ::tolower);
 
 							//Check if already added to our map
@@ -108,34 +136,58 @@ namespace advScript
 							auto pos = EventScripts.find(scriptName);
 							if (pos != EventScripts.end())
 							{
-								json[i]["ScriptId"] = pos->second;
+								printf("WARNING: Found duplicate EventScript: %s\n", scriptName.c_str());
+								item->at(ScriptIdFieldName) = pos->second;
 							}
 							//If not, continue
 							else
 							{
-								json[i]["ScriptId"] = index;
+								item->at(ScriptIdFieldName) = index;
 								EventScripts.insert(std::pair<std::string, int>(scriptName, index));
 							}
 
-							//for (int ii = 0; ii < json[i]["On"].size(); ii++)
-							//{
-							//	auto on = json[i][ii]["On"];
-							//	if (on[ii].is_string())
-							//	{
-							//		auto value = on.get<std::string>();
-							//		auto pos = GameFlagData.find(value);
-							//		if (pos != GameFlagData.end())
-							//		{
-							//			printf("Found GameFlagData: %s\n", value.c_str());
-							//			entry["On"] = pos->second;
-							//		}
-							//		else
-							//		{
-							//			printf("Failed to find GameFlagData: %s\n", value.c_str());
-							//			continue;
-							//		}
-							//	}
-							//}
+							//Resolve GameFlagData
+							auto pointOnFlag = &item->at(PointOnFlagFieldName);
+							ResolveGameFlagData(pointOnFlag, PointOnFlagFieldName, scriptName.c_str());
+
+							auto storyFlag = &item->at(StoryFlagFieldName);
+							ResolveGameFlagData(storyFlag, StoryFlagFieldName, scriptName.c_str());
+
+							auto onArray = &item->at(OnFieldName);
+							for (json::iterator it = onArray->begin(); it != onArray->end(); ++it)
+							{
+								ResolveGameFlagData(&*it, OnFieldName, scriptName.c_str());
+							}
+
+							auto offArray = &item->at(OffFieldName);
+							for (json::iterator it = offArray->begin(); it != offArray->end(); ++it)
+							{
+								ResolveGameFlagData(&*it, OffFieldName, scriptName.c_str());
+							}
+
+							auto npcOnArray = &item->at(NpcOnFieldName);
+							for (json::iterator it = npcOnArray->begin(); it != npcOnArray->end(); ++it)
+							{
+								ResolveGameFlagData(&*it, NpcOnFieldName, scriptName.c_str());
+							}
+
+							auto npcOffArray = &item->at(NpcOffFieldName);
+							for (json::iterator it = npcOffArray->begin(); it != npcOffArray->end(); ++it)
+							{
+								ResolveGameFlagData(&*it, NpcOffFieldName, scriptName.c_str());
+							}
+
+							auto flagOnArray = &item->at(FlagOnFieldName);
+							for (json::iterator it = flagOnArray->begin(); it != flagOnArray->end(); ++it)
+							{
+								ResolveGameFlagData(&*it, FlagOnFieldName, scriptName.c_str());
+							}
+
+							auto flagOffArray = &item->at(FlagOffFieldName);
+							for (json::iterator it = flagOffArray->begin(); it != flagOffArray->end(); ++it)
+							{
+								ResolveGameFlagData(&*it, FlagOffFieldName, scriptName.c_str());
+							}
 
 							//Enum_EnumResult result = {};
 							////If preexisting EventScriptId, use it instead
@@ -170,11 +222,11 @@ namespace advScript
 							//	}
 							//}
 
-							json[i]["PointActive"] = json[i]["PointActive"].get<bool>() ? 1 : 0;
+							item->at(PointActiveFieldName) = item->at(PointActiveFieldName).get<bool>() ? 1 : 0;
 							EventUnlockFlagData* object = reinterpret_cast<EventUnlockFlagData*>(
 								JsonUtility_FromJson(
 									reinterpret_cast<String*>(
-										il2cpp_string_new(json[i].dump().c_str())
+										il2cpp_string_new(item->dump().c_str())
 									),
 									eventUnlockFlagDataType,
 									nullptr
@@ -188,6 +240,8 @@ namespace advScript
 		}
 	}
 
+	//EventScript_ScriptPlayer__Update
+	//Read command
 	uint64_t Tramp_AdvScriptReader_Init_d_4_MoveNext;
 	NOINLINE bool __cdecl Hook_AdvScriptReader_Init_d_4_MoveNext(AdvScriptReader_Init_d_4* __this, MethodInfo* method)
 	{
@@ -246,30 +300,6 @@ namespace advScript
 		return success;
 	}
 
-
-	//uint64_t Tramp_GameFlagData__Enum__ToString;
-	//NOINLINE String* __cdecl Hook_GameFlagData__Enum__ToString(Enum__Boxed* __this, MethodInfo* method)
-	//{
-	//	auto value = PLH::FnCast(Tramp_GameFlagData__Enum__ToString, Hook_GameFlagData__Enum__ToString)(__this, method);
-	//	auto enumString = il2cppi_to_string(value);
-	//	printf("Getting Flag %s\n", enumString.c_str());
-
-	//	if (!std::any_of(enumString.begin(), enumString.end(), isalpha))
-	//	{
-	//		auto id = std::stoi(enumString);
-	//		for (auto it = EventScripts.begin(); it != EventScripts.end(); ++it)
-	//		{
-	//			if (it->second == id)
-	//			{
-	//				printf("Found EventScript %s: %d\n", it->first.c_str(), id);
-	//				return reinterpret_cast<String*>(il2cpp_string_new(it->first.c_str()));
-	//			}
-	//		}
-	//		printf("Failed to find EventScript %s: %d\n", enumString.c_str(), id);
-	//	}
-	//	return value;
-	//}
-
 	uint64_t Tramp_EventScriptId__Enum__ToString;
 	NOINLINE String* __cdecl Hook_EventScriptId__Enum__ToString(Enum__Boxed* __this, MethodInfo* method)
 	{
@@ -297,15 +327,76 @@ namespace advScript
 	{
 		PLH::FnCast(Tramp_EventFlagManager_Start, Hook_EventFlagManager_Start)(__this, method);
 		LoadEventUnlockData(__this);
+		EventFlagManager_InitEventStartPoints(__this, nullptr);
 		//Call again to initialize with our own data
 		//TODO: Figure out what exactly they do as this is a bit hacky
-		PLH::FnCast(Tramp_EventFlagManager_Start, Hook_EventFlagManager_Start)(__this, method);
+		//PLH::FnCast(Tramp_EventFlagManager_Start, Hook_EventFlagManager_Start)(__this, method);
+
 		Detour_EventFlagManager_Start->unHook();
+	}
+	//EventStartPoint->Enable
+
+	uint64_t Tramp_NpcDataManager_SetNpcStatusData;
+	NOINLINE void __cdecl Hook_NpcDataManager_SetNpcStatusData(NpcDataManager* __this, MethodInfo* method)
+	{
+		PLH::FnCast(Tramp_NpcDataManager_SetNpcStatusData, Hook_NpcDataManager_SetNpcStatusData)(__this, method);
+		auto npcDatas = __this->fields.NpcDatas;
+
+		//Modify our candidates
+		auto npcs = npcDatas->fields._items->vector;
+		for (int i = 0; i < npcDatas->fields._size; i++)
+		{
+			auto npc = npcs[i];
+			if (npc->fields.statusData)
+			{
+				for (auto candidate : MarriagableCandidates)
+				{
+					if (npc->fields.NpcId == candidate)
+					{
+						npc->fields.statusData->fields.MarriageCandidate = true;
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	uint64_t Tramp_ConditionsForLoverJudgment_CheckCanbeLoverNPCID;
+	//Remove their hardcoding
+	NOINLINE bool __cdecl Hook_ConditionsForLoverJudgment_CheckCanbeLoverNPCID(NPCID__Enum npcid, MethodInfo* method)
+	{
+		auto saveData = app::SaveDataManager_get_GameSaveData(nullptr);
+		auto playerData = saveData->fields.PlayerData;
+		auto marriedNPCID = playerData->fields.MarriedNPCID;
+		if (static_cast<int>(marriedNPCID) > 2)
+			return marriedNPCID == npcid;
+		else
+		{
+			auto npcDataManager = SingletonMonoBehaviour_1_NpcDataManager__get_Instance(*SingletonMonoBehaviour_1_NpcDataManager__get_Instance__MethodInfo);
+			auto npcData = NpcDataManager_GetNpcData_1(npcDataManager, npcid, nullptr);
+			return npcData->fields.statusData->fields.MarriageCandidate;
+		}
 	}
 
 	void InstallHooks()
 	{
 		PLH::CapstoneDisassembler dis(PLH::Mode::x64);
+
+		auto detour_ConditionsForLoverJudgment_CheckCanbeLoverNPCID = new PLH::x64Detour(
+			reinterpret_cast<char*>(ConditionsForLoverJudgment_CheckCanbeLoverNPCID),
+			reinterpret_cast<char*>(Hook_ConditionsForLoverJudgment_CheckCanbeLoverNPCID),
+			&Tramp_ConditionsForLoverJudgment_CheckCanbeLoverNPCID,
+			dis
+		);
+		detour_ConditionsForLoverJudgment_CheckCanbeLoverNPCID->hook();
+
+		auto detour_NpcDataManager_SetNpcStatusData = new PLH::x64Detour(
+			reinterpret_cast<char*>(NpcDataManager_SetNpcStatusData),
+			reinterpret_cast<char*>(Hook_NpcDataManager_SetNpcStatusData),
+			&Tramp_NpcDataManager_SetNpcStatusData,
+			dis
+		);
+		detour_NpcDataManager_SetNpcStatusData->hook();
 
 		auto detour_AdvScriptReader_Init_d_4_MoveNext = new PLH::x64Detour(
 			reinterpret_cast<char*>(AdvScriptReader_Init_d_4_MoveNext),
@@ -323,13 +414,55 @@ namespace advScript
 		);
 		Detour_EventFlagManager_Start->hook();
 		
-		
 		auto task_LoadGameFlagData = std::async(std::launch::async, []() -> void
 		{
-			//Hardcoding as easier
 			GameFlagData = std::map<std::string, int>();
-			auto index = static_cast<int32_t>(GameFlagData__Enum::Max);
 			auto dir = std::filesystem::absolute(std::format("{}/GameFlagData", rigbarthPath));
+			for (const auto& dirEntry : std::filesystem::recursive_directory_iterator::recursive_directory_iterator(dir))
+			{
+				if (dirEntry.is_regular_file())
+				{
+					auto path = dirEntry.path();
+					if (utils::string::iequals(path.extension().generic_string(), ".json"))
+					{
+						std::ifstream file(path);
+						auto json = json::parse(file, nullptr, false);
+						if (json.is_discarded())
+						{
+							printf("Invalid JSON: %s\n", path.generic_string().c_str());
+							continue;
+						}
+						for (auto& [key, value] : json.items()) {
+							if (value.is_number_integer())
+							{
+								auto id = value.get<int>();
+								bool isDuplicate = false;
+								for (auto it = GameFlagData.begin(); it != GameFlagData.end(); ++it)
+								{
+									if (it->second == id)
+									{
+										printf("WARNING: GameFlagData %s contains duplicate ID: %d", key.c_str(), id);
+										isDuplicate = true;
+										break;
+									}
+								}
+
+								if (!isDuplicate)
+								{
+									GameFlagData.insert(std::pair<std::string, int>(key, value));
+								}
+							}
+						}
+					}
+				}
+			}
+		});
+
+		
+		auto task_LoadMarriagableCandidates = std::async(std::launch::async, []() -> void
+		{
+			MarriagableCandidates = std::vector<int>();
+			auto dir = std::filesystem::absolute(std::format("{}/MarriagableCandidates", rigbarthPath));
 			for (const auto& dirEntry : std::filesystem::recursive_directory_iterator::recursive_directory_iterator(dir))
 			{
 				if (dirEntry.is_regular_file())
@@ -346,31 +479,23 @@ namespace advScript
 						}
 						for (int i = 0; i < json.size(); i++)
 						{
-							if (json[i].is_string())
+							if (json[i].is_number_integer())
 							{
-								auto gameFlagData = json[i].get<std::string>();
-								auto pos = GameFlagData.find(gameFlagData);
-								//If already exists
-								if (pos != GameFlagData.end())
-								{
-									printf("WARNING: Found duplicate GameFlagData: %s", gameFlagData.c_str());
-								}
-								else
-								{
-									GameFlagData.insert(std::pair<std::string, int>(gameFlagData, index++));
-								}
-							}
-							else
-							{
-								printf("Error in %s\n", path.generic_string().c_str());
-								printf("Couldn't parse:\n%s\n", json[i].dump().c_str());
+								MarriagableCandidates.push_back(json[i].get<int>());
 							}
 						}
 					}
 				}
 			}
 		});
+		//if ((*Enum__TypeInfo)->_1.cctor_finished && (*Enum__TypeInfo)->_1.initialized)
+		//{
+		//	il2cpp_runtime_class_init((Il2CppClass*)(*Enum__TypeInfo));
+		//}
 
+		//EventControllerBase__SetEventFlagPoint -> FlagDataStorage__SetScriptFlag is related to adding Active Points
+		//NpcData__get_LoveStroyState: Important for proposescript
+		//UILoveEventConvTextData in MasterData
 		auto task_Enum_TryParse_AdvScriptID = std::async(std::launch::async, []() -> void
 		{
 			while (true)
@@ -396,19 +521,6 @@ namespace advScript
 				}
 			}
 		});
-
-		//auto task_GameFlagData__Enum__ToString = std::async(std::launch::async, []() -> void
-		//{
-		//	while (true)
-		//	{
-		//		if (il2cppi_is_initialized(GameFlagData__Enum__TypeInfo))
-		//		{
-		//			Tramp_GameFlagData__Enum__ToString = uint64_t((*GameFlagData__Enum__TypeInfo)->vtable.ToString.methodPtr);
-		//			(*GameFlagData__Enum__TypeInfo)->vtable.ToString.methodPtr = reinterpret_cast<Il2CppMethodPointer>(&Hook_GameFlagData__Enum__ToString);
-		//			break;
-		//		}
-		//	}
-		//});
 
 		auto task_Enum_TryParse_EventScriptID = std::async(std::launch::async, []() -> void
 		{

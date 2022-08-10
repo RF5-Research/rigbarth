@@ -1,11 +1,12 @@
 // Generated C++ file by Il2CppInspector - http://www.djkaty.com - https://github.com/djkaty
 // Custom injected code entry point
 
-#include "pch-il2cpp.h"
 #include <iostream>
 #include "il2cpp-appdata.h"
 #include "helpers.h"
 #include "hooks/hooks.h"
+#include "debugMenu.h"
+
 using namespace app;
 
 // Set the name of your log file here
@@ -24,6 +25,7 @@ void Run()
      il2cppi_new_console();
 
     // Place your custom code here
+    InstallHooks();
     advScript::InstallHooks();
     conditionsForLoverJudgement::InstallHooks();
 }

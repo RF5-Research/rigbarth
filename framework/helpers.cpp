@@ -1,6 +1,5 @@
 // Generated C++ file by Il2CppInspector - http://www.djkaty.com - https://github.com/djkaty
 // Helper functions
-#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 #include "pch-il2cpp.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -25,7 +24,7 @@ void il2cppi_log_write(std::string text) {
 
     DWORD written;
     WriteFile(hfile, text.c_str(), (DWORD) text.length(), &written, NULL);
-    WriteFile(hfile, "\r\n", 2, &written, NULL);
+    WriteFile(hfile, "\r\n", 2, &written, NULL);+
     CloseHandle(hfile);
 }
 

@@ -42,6 +42,22 @@ DO_APP_FUNC(0x00D28440, Object*, JsonUtility_FromJson, (String* json, Type* type
 DO_APP_FUNC_METHODINFO(0x03047108, JsonUtility_FromJson__MethodInfo);
 DO_APP_FUNC_METHODINFO(0x0301F0E8, SingletonMonoBehaviour_1_EventControllerBase__get_Instance__MethodInfo);
 DO_APP_FUNC(0x01B59BE0, EventControllerBase*, SingletonMonoBehaviour_1_EventControllerBase__get_Instance, (MethodInfo* method));
+DO_APP_FUNC(0x01B59BE0, NpcDataManager*, SingletonMonoBehaviour_1_NpcDataManager__get_Instance, (MethodInfo* method));
+
 DO_APP_FUNC(0x00D56200, EventFlagManager*, EventControllerBase_get_FlagManager, (EventControllerBase* __this, MethodInfo* method));
 DO_APP_FUNC(0x011EE110, void, EventFlagManager_Start, (EventFlagManager* __this, MethodInfo* method));
 DO_APP_FUNC(0x0057BDB0, bool, Enum_TryParseEnum, (Type* enumType, String* value, bool ignoreCase, Enum_EnumResult* parseResult, MethodInfo* method));
+DO_APP_FUNC(0x01349E30, void, SubEventManager_DEBUG_AddOccurrenceSubEvent, (SubEventManager* __this, int32_t eventid, MethodInfo* method));
+DO_APP_FUNC(0x00E027F0, void, TutorialManager_MonsterCreate, (TutorialManager* __this, String* monster, float x, float y, float z, MethodInfo* method));
+DO_APP_FUNC_METHODINFO(0x030046E8, SingletonMonoBehaviour_1_Tutorial_TutorialManager___ctor__MethodInfo);
+DO_APP_FUNC(0x01508D90, void, NpcDataManager_SetNpcStatusData, (NpcDataManager* __this, MethodInfo* method));
+DO_APP_FUNC(0x011EC160, void, EventFlagManager_InitEventStartPoints, (EventFlagManager * __this, MethodInfo * method));
+DO_APP_FUNC(0x011EA6B0, void, EventFlagManager_EnableEventPoint, (EventFlagManager* __this, EventUnlockFlagData* unlockData, MethodInfo* method));
+DO_APP_FUNC(0x011ECBC0, void, EventFlagManager_RegistActiveEventPointList, (EventFlagManager* __this, EventUnlockFlagData* unlockData, MethodInfo* method));
+DO_APP_FUNC(0x00EA3FB0, bool, ConditionsForLoverJudgment_CheckCanbeLoverNPCID, (NPCID__Enum npcid, MethodInfo* method));
+DO_APP_FUNC(0x011EDC10, void, EventFlagManager_SetEventFlagFromScriptDebug, (EventFlagManager* __this, String* scriptName, MethodInfo* method));
+DO_APP_FUNC_METHODINFO(0x0301E6B8, SingletonMonoBehaviour_1_NpcDataManager__get_Instance__MethodInfo);
+DO_APP_FUNC(0x01506FF0, NpcData*, NpcDataManager_GetNpcData_1, (NpcDataManager* __this, NPCID__Enum NpcId, MethodInfo* method));
+
+DO_APP_FUNC(0x0115E790, void, FurnitureSaveData__ctor, (FurnitureSaveData* __this, int32_t type, MethodInfo* method));
+DO_APP_FUNC(0x012DDE20, void, RF5FurnitureData_Initialize, (RF5FurnitureData* __this, MethodInfo* method));

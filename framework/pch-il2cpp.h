@@ -6,6 +6,7 @@
 
 #ifndef PCH_IL2CPP_H
 #define PCH_IL2CPP_H
+#define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
 
 
 // add headers that you want to pre-compile here
