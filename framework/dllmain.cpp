@@ -4,7 +4,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include "il2cpp-init.h"
-#include "main.h"
+#include "Main.hpp"
 
 // DLL entry point
 BOOL APIENTRY DllMain( HMODULE hModule,

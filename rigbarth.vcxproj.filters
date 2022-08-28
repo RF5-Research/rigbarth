@@ -1,99 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="utils\string.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="user\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="user\debugMenu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\pch-il2cpp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\il2cpp-init.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\dllmain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\helpers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="user\hooks\advScript.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="user\hooks\conditionsForLoverJudgment.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="kiero\kiero.cpp">
-      <Filter>kiero</Filter>
-    </ClCompile>
+    <ClCompile Include="user\AdvCommands.cpp" />
+    <ClCompile Include="user\Constants.cpp" />
+    <ClCompile Include="user\Hooks\AdvMain.cpp" />
+    <ClCompile Include="user\Hooks\Enums.cpp" />
+    <ClCompile Include="user\Hooks\AdvScriptReader.cpp" />
+    <ClCompile Include="user\Hooks\EventFlagManager.cpp" />
+    <ClCompile Include="user\Hooks\ScriptWork.cpp" />
+    <ClCompile Include="user\Hooks\NpcDataManager.cpp" />
+    <ClCompile Include="user\Hooks\Hooks.cpp" />
+    <ClCompile Include="utils\string.cpp" />
+    <ClCompile Include="framework\pch-il2cpp.cpp" />
+    <ClCompile Include="user\Main.cpp" />
+    <ClCompile Include="framework\il2cpp-init.cpp" />
+    <ClCompile Include="framework\helpers.cpp" />
+    <ClCompile Include="framework\dllmain.cpp" />
+    <ClCompile Include="user\DebugMenu.cpp" />
+    <ClCompile Include="user\Hooks\ConditionsForLoverJudgment.cpp" />
+    <ClCompile Include="user\Hooks\AdvScript.cpp" />
+    <ClCompile Include="kiero\kiero.cpp" />
+    <ClCompile Include="user\RigbarthCommands.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="user\debugMenu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="user\main.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\utils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="user\hooks\advScript.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="user\hooks\hooks.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="framework\pch-il2cpp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="framework\il2cpp-init.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="framework\il2cpp-appdata.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="framework\helpers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="appdata\il2cpp-api-functions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="appdata\il2cpp-api-functions-ptr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="appdata\il2cpp-functions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="appdata\il2cpp-metadata-version.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="appdata\il2cpp-types.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="appdata\il2cpp-types-ptr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="kiero\kiero.h">
-      <Filter>kiero</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{753850c9-99f0-4081-95d6-b9cfe0acff5a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{63c303d5-7615-4916-9fff-e81982182321}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="kiero">
-      <UniqueIdentifier>{1edf06b7-73f6-414e-b339-bb2692760d4e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="test">
-      <UniqueIdentifier>{5442a964-daf3-4f54-a20c-d4718402f82f}</UniqueIdentifier>
-    </Filter>
+    <ClInclude Include="user\Constants.hpp" />
+    <ClInclude Include="user\AdvCommands.hpp" />
+    <ClInclude Include="user\Hooks\Enums.hpp" />
+    <ClInclude Include="user\Hooks\AdvMain.hpp" />
+    <ClInclude Include="user\Hooks\AdvScriptReader.hpp" />
+    <ClInclude Include="user\Hooks\ConditionsForLoverJudgment.hpp" />
+    <ClInclude Include="user\Hooks\EventFlagManager.hpp" />
+    <ClInclude Include="user\Hooks\NpcDataManager.hpp" />
+    <ClInclude Include="user\Hooks\ScriptWork.hpp" />
+    <ClInclude Include="kiero\kiero.h" />
+    <ClInclude Include="user\DebugMenu.hpp" />
+    <ClInclude Include="framework\helpers.h" />
+    <ClInclude Include="user\Hooks\Hooks.hpp" />
+    <ClInclude Include="appdata\il2cpp-api-functions.h" />
+    <ClInclude Include="appdata\il2cpp-api-functions-ptr.h" />
+    <ClInclude Include="framework\il2cpp-appdata.h" />
+    <ClInclude Include="appdata\il2cpp-functions.h" />
+    <ClInclude Include="framework\il2cpp-init.h" />
+    <ClInclude Include="appdata\il2cpp-metadata-version.h" />
+    <ClInclude Include="appdata\il2cpp-types.h" />
+    <ClInclude Include="appdata\il2cpp-types-ptr.h" />
+    <ClInclude Include="user\Main.hpp" />
+    <ClInclude Include="framework\pch-il2cpp.h" />
+    <ClInclude Include="utils\utils.h" />
+    <ClInclude Include="user\RigbarthCommands.hpp" />
   </ItemGroup>
 </Project>

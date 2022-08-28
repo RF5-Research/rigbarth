@@ -39,10 +39,20 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="kiero\kiero.cpp" />
-    <ClCompile Include="user\debugMenu.cpp" />
-    <ClCompile Include="user\hooks\advScript.cpp" />
-    <ClCompile Include="user\hooks\conditionsForLoverJudgment.cpp" />
-    <ClCompile Include="user\main.cpp" />
+    <ClCompile Include="user\AdvCommands.cpp" />
+    <ClCompile Include="user\Constants.cpp" />
+    <ClCompile Include="user\DebugMenu.cpp" />
+    <ClCompile Include="user\Hooks\AdvMain.cpp" />
+    <ClCompile Include="user\Hooks\AdvScript.cpp" />
+    <ClCompile Include="user\Hooks\AdvScriptReader.cpp" />
+    <ClCompile Include="user\Hooks\ConditionsForLoverJudgment.cpp" />
+    <ClCompile Include="user\Hooks\Enums.cpp" />
+    <ClCompile Include="user\Hooks\EventFlagManager.cpp" />
+    <ClCompile Include="user\Hooks\Hooks.cpp" />
+    <ClCompile Include="user\Hooks\NpcDataManager.cpp" />
+    <ClCompile Include="user\Hooks\ScriptWork.cpp" />
+    <ClCompile Include="user\Main.cpp" />
+    <ClCompile Include="user\RigbarthCommands.cpp" />
     <ClCompile Include="utils\string.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -57,10 +67,19 @@
     <ClInclude Include="framework\il2cpp-init.h" />
     <ClInclude Include="framework\pch-il2cpp.h" />
     <ClInclude Include="kiero\kiero.h" />
-    <ClInclude Include="user\debugMenu.h" />
-    <ClInclude Include="user\hooks\advScript.h" />
-    <ClInclude Include="user\hooks\hooks.h" />
-    <ClInclude Include="user\main.h" />
+    <ClInclude Include="user\Constants.hpp" />
+    <ClInclude Include="user\DebugMenu.hpp" />
+    <ClInclude Include="user\AdvCommands.hpp" />
+    <ClInclude Include="user\Hooks\AdvMain.hpp" />
+    <ClInclude Include="user\Hooks\AdvScriptReader.hpp" />
+    <ClInclude Include="user\Hooks\ConditionsForLoverJudgment.hpp" />
+    <ClInclude Include="user\Hooks\Enums.hpp" />
+    <ClInclude Include="user\Hooks\EventFlagManager.hpp" />
+    <ClInclude Include="user\Hooks\Hooks.hpp" />
+    <ClInclude Include="user\Hooks\NpcDataManager.hpp" />
+    <ClInclude Include="user\Hooks\ScriptWork.hpp" />
+    <ClInclude Include="user\Main.hpp" />
+    <ClInclude Include="user\RigbarthCommands.hpp" />
     <ClInclude Include="utils\utils.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -79,7 +98,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <!--<PlatformToolset>v142</PlatformToolset>-->
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -87,14 +106,14 @@
     <!--<PlatformToolset>v142</PlatformToolset>-->
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <!--<PlatformToolset>v142</PlatformToolset>-->
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -102,7 +121,7 @@
     <!--<PlatformToolset>v142</PlatformToolset>-->
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -209,7 +228,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;RIGBARTH_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch-il2cpp.h</PrecompiledHeaderFile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalIncludeDirectories>$(ProjectDir)kiero;$(ProjectDir)appdata;$(ProjectDir)user;$(ProjectDir)utils;$(ProjectDir)framework;$(ProjectDir)imgui</AdditionalIncludeDirectories>
@@ -236,7 +255,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;RIGBARTH_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch-il2cpp.h</PrecompiledHeaderFile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalIncludeDirectories>$(ProjectDir)kiero;$(ProjectDir)appdata;$(ProjectDir)user;$(ProjectDir)utils;$(ProjectDir)framework;$(ProjectDir)imgui</AdditionalIncludeDirectories>
@@ -256,7 +275,8 @@
       <AdditionalOptions>/FI"framework/pch-il2cpp.h" %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy $(OutDir)$(TargetName).dll "C:\Users\Sloth\Downloads\Rune Factory 5\plugins" /Y</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

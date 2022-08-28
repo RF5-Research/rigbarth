@@ -4,10 +4,10 @@
 #include <iostream>
 #include "il2cpp-appdata.h"
 #include "helpers.h"
-#include "hooks/hooks.h"
-#include "debugMenu.h"
-
-using namespace app;
+#include "hooks/Hooks.hpp"
+#include "DebugMenu.hpp"
+#include <RigbarthCommands.hpp>
+#include <AdvCommands.hpp>
 
 // Set the name of your log file here
 extern const LPCWSTR LOG_FILE = L"il2cpp-log.txt";
@@ -25,7 +25,8 @@ void Run()
      il2cppi_new_console();
 
     // Place your custom code here
-    InstallHooks();
-    advScript::InstallHooks();
-    conditionsForLoverJudgement::InstallHooks();
+    AdvCommands::Initialize();
+    DebugMenu::Initialize();
+    Hooks::InstallHooks();
+    RigbarthCommands::Subscribe();
 }
