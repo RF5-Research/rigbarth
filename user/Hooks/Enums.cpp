@@ -3,10 +3,11 @@
 #include "il2cpp-appdata.h"
 #include "helpers.h"
 #include <Constants.hpp>
-#include <utils.h>
 #include <thread>
 #include "Enums.hpp"
 #include <nlohmann/json.hpp>
+#include <boost/algorithm/string/predicate.hpp>
+#include <logging.hpp>
 
 using json = nlohmann::json;
 
@@ -27,17 +28,17 @@ namespace Hooks::Enums
 			auto pos = AdvScriptID.find(enumString);
 			if (pos != AdvScriptID.end())
 			{
-				printf("Found AdvScript: %s\n", enumString.c_str());
+				LOG_INFO("Found AdvScript: {}", enumString);
 				*result = pos->second;
 				return 1;
 			}
 			else
 			{
-				printf("Failed to find AdvScript: %s\n", enumString.c_str());
+				LOG_WARNING("Failed to find AdvScript: {}", enumString);
 				return success;
 			}
 		}
-		printf("Loading builtin AdvScript: %s\n", enumString.c_str());
+		LOG_INFO("Loading base AdvScript: {}", enumString);
 		return success;
 	}
 
@@ -51,17 +52,17 @@ namespace Hooks::Enums
 			auto pos = EventScriptID.find(enumString);
 			if (pos != EventScriptID.end())
 			{
-				printf("Found EventScript: %s\n", enumString.c_str());
+				LOG_INFO("Found EventScript: {}", enumString);
 				*result = pos->second;
 				return 1;
 			}
 			else
 			{
-				printf("Failed to find EventScript: %s\n", enumString.c_str());
+				LOG_WARNING("Failed to find EventScript: {}", enumString);
 				return success;
 			}
 		}
-		printf("Loading builtin EventScript: %s\n", enumString.c_str());
+		LOG_INFO("Loading base EventScript: {}", enumString);
 		return success;
 	}
 
@@ -77,30 +78,31 @@ namespace Hooks::Enums
 			{
 				if (it->second == id)
 				{
-					printf("Found EventScript %s\n", it->first.c_str());
+					LOG_INFO("Found EventScript {}", it->first);
 					return reinterpret_cast<app::String*>(il2cpp_string_new(it->first.c_str()));
 				}
 			}
-			printf("Failed to find EventScript %s\n", enumString.c_str());
+			LOG_WARNING("Failed to find EventScript {}", enumString);
 		}
+		//LOG_INFO("Loading base EventScript: {}", enumString);
 		return value;
 	}
 
 	void LoadGameFlagData()
 	{
-		auto dir = std::filesystem::absolute(std::format("{}/GameFlagData", Constants::RigbarthPath));
+		auto dir = std::filesystem::absolute(std::format("{}/GameFlagData", Constants::PLUGIN_NAME));
 		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator::recursive_directory_iterator(dir))
 		{
 			if (dirEntry.is_regular_file())
 			{
 				auto path = dirEntry.path();
-				if (utils::string::iequals(path.extension().generic_string(), ".json"))
+				if (boost::iequals(path.extension().generic_string(), ".json"))
 				{
 					std::ifstream file(path);
 					auto json = json::parse(file, nullptr, false);
 					if (json.is_discarded())
 					{
-						printf("Invalid JSON: %s\n", path.generic_string().c_str());
+						LOG_ERROR("Invalid JSON: {}", path.generic_string());
 						continue;
 					}
 					for (auto& [key, value] : json.items()) {
@@ -112,7 +114,7 @@ namespace Hooks::Enums
 							{
 								if (it->second == id)
 								{
-									printf("WARNING: GameFlagData %s contains duplicate ID: %d", key.c_str(), id);
+									LOG_WARNING("GameFlagData {} contains duplicate ID: {}", key, id);
 									isDuplicate = true;
 									break;
 								}
@@ -133,7 +135,7 @@ namespace Hooks::Enums
 	{
 
 		LoadGameFlagData();
-		std::thread{[]() -> void
+		std::jthread([]() -> void
 		{
 			while (true)
 			{
@@ -144,9 +146,9 @@ namespace Hooks::Enums
 					break;
 				}
 			}
-		}}.detach();
+		}).detach();
 
-		std::thread{ []() -> void
+		std::jthread( []() -> void
 		{
 			while (true)
 			{
@@ -157,9 +159,9 @@ namespace Hooks::Enums
 					break;
 				}
 			}
-		}}.detach();
+		}).detach();
 
-		std::thread{ []() -> void
+		std::jthread( []() -> void
 		{
 			while (true)
 			{
@@ -170,6 +172,6 @@ namespace Hooks::Enums
 					break;
 				}
 			}
-		}}.detach();
+		}).detach();
 	}
 }

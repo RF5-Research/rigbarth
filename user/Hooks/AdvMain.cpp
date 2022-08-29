@@ -2,6 +2,7 @@
 #include <polyhook2/CapstoneDisassembler.hpp>
 #include "AdvCommands.hpp"
 #include "il2cpp-appdata.h"
+#include <logging.hpp>
 
 namespace Hooks::AdvMain
 {
@@ -13,7 +14,7 @@ namespace Hooks::AdvMain
 		if (pos != AdvCommands::Callbacks.end())
 		{
 			__this->fields.nextWork = app::AdvMain_WorkList__Enum::WORK_READ_TEXT;
-			printf("Invoking CMD: %d\n", pos->first);
+			LOG_INFO("Invoking CMD: {}", pos->first);
 			pos->second(__this, npc);
 			return __this->fields.nextWork;
 		}

@@ -2,5 +2,5 @@
 
 namespace Constants
 {
-	const char* RigbarthPath = "rigbarth";
+	const char* PLUGIN_NAME = "RIGBARTH";
 }

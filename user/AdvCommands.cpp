@@ -4,10 +4,10 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 #include "Constants.hpp"
-#include "utils.h"
 #include "AdvCommands.hpp"
+#include <boost/algorithm/string/predicate.hpp>
+#include "logging.hpp"
 
-using namespace app;
 using namespace std;
 using json = nlohmann::json;
 
@@ -22,33 +22,32 @@ namespace AdvCommands
 
 		if (pos != Callbacks.end())
 		{
-			printf("ERROR: AdvCommand %d already has been subscribed to\n", cmdID);
+			LOG_ERROR("CMD ID {} has already been subscribed to", cmdID);
 			return false;
 		}
 		else
 		{
 			Callbacks.emplace(cmdID, functionPTR);
-			printf("AdvCommand %d has been subscribed to\n", cmdID);
-
+			LOG_INFO("CMD ID `{}` has been subscribed to", cmdID);
 			return true;
 		}
 	}
 
 	void AdvCommands::Initialize()
 	{
-		auto dir = filesystem::absolute(std::format("{}/AdvCommands", Constants::RigbarthPath));
+		auto dir = filesystem::absolute(std::format("{}/AdvCommands", Constants::PLUGIN_NAME));
 		for (const auto& dirEntry : filesystem::recursive_directory_iterator::recursive_directory_iterator(dir))
 		{
 			if (dirEntry.is_regular_file())
 			{
 				auto path = dirEntry.path();
-				if (utils::string::iequals(path.extension().generic_string(), ".json"))
+				if (boost::iequals(path.extension().generic_string(), ".json"))
 				{
 					ifstream file(path);
 					auto json = json::parse(file, nullptr, false);
 					if (json.is_discarded())
 					{
-						printf("Invalid JSON: %s\n", path.generic_string().c_str());
+						LOG_ERROR("Invalid JSON: {}", path.generic_string());
 						continue;
 					}
 
@@ -59,7 +58,7 @@ namespace AdvCommands
 
 						if (pos != Commands.end())
 						{
-							printf("ERROR: Duplicate AdvCommand ID: %d\n", id);
+							LOG_ERROR("Duplicate CMD ID: %d", id);
 						}
 						else
 						{

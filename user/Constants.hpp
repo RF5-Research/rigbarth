@@ -2,5 +2,5 @@
 
 namespace Constants
 {
-	extern const char* RigbarthPath;
+	extern const char* PLUGIN_NAME;
 }

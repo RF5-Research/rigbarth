@@ -98,3 +98,7 @@ DO_APP_FUNC(0x00456840, Transform*, ObjectInteractionController_FocusInterface_g
 DO_APP_FUNC(0x0106A5F0, stCommand_t, ScriptWork_ReadNext, (ScriptWork* __this, MethodInfo* method));
 DO_APP_FUNC(0x0106A3B0, int32_t, ScriptWork_GetTextTableInt, (ScriptWork* __this, int32_t addr, int32_t size, MethodInfo* method));
 DO_APP_FUNC(0x01052510, AdvMain_WorkList__Enum, AdvMain_ReadCommand, (AdvMain* __this, NpcController* npc, MethodInfo* method));
+DO_APP_FUNC(0x00DF3FE0, TimeZone__Enum, TimeManager_get_TimeZone, (TimeManager* __this, MethodInfo* method));
+DO_APP_FUNC(0x01B59BE0, TimeManager*, SingletonMonoBehaviour_1_TimeManager__get_Instance, (MethodInfo* method));
+DO_APP_FUNC_METHODINFO(0x0301DF70, SingletonMonoBehaviour_1_TimeManager__get_Instance__MethodInfo);
+DO_APP_FUNC(0x00727540, LifecycleState__Enum, NpcData_get_CurrentLifecycleState, (NpcData* __this, MethodInfo* method));

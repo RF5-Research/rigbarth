@@ -2,7 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="user\AdvCommands.cpp" />
-    <ClCompile Include="user\Constants.cpp" />
     <ClCompile Include="user\Hooks\AdvMain.cpp" />
     <ClCompile Include="user\Hooks\Enums.cpp" />
     <ClCompile Include="user\Hooks\AdvScriptReader.cpp" />
@@ -10,7 +9,6 @@
     <ClCompile Include="user\Hooks\ScriptWork.cpp" />
     <ClCompile Include="user\Hooks\NpcDataManager.cpp" />
     <ClCompile Include="user\Hooks\Hooks.cpp" />
-    <ClCompile Include="utils\string.cpp" />
     <ClCompile Include="framework\pch-il2cpp.cpp" />
     <ClCompile Include="user\Main.cpp" />
     <ClCompile Include="framework\il2cpp-init.cpp" />
@@ -19,8 +17,10 @@
     <ClCompile Include="user\DebugMenu.cpp" />
     <ClCompile Include="user\Hooks\ConditionsForLoverJudgment.cpp" />
     <ClCompile Include="user\Hooks\AdvScript.cpp" />
-    <ClCompile Include="kiero\kiero.cpp" />
+    <ClCompile Include="user\kiero.cpp" />
     <ClCompile Include="user\RigbarthCommands.cpp" />
+    <ClCompile Include="user\Constants.cpp" />
+    <ClCompile Include="user\logging.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="user\Constants.hpp" />
@@ -32,7 +32,7 @@
     <ClInclude Include="user\Hooks\EventFlagManager.hpp" />
     <ClInclude Include="user\Hooks\NpcDataManager.hpp" />
     <ClInclude Include="user\Hooks\ScriptWork.hpp" />
-    <ClInclude Include="kiero\kiero.h" />
+    <ClInclude Include="user\kiero.h" />
     <ClInclude Include="user\DebugMenu.hpp" />
     <ClInclude Include="framework\helpers.h" />
     <ClInclude Include="user\Hooks\Hooks.hpp" />
@@ -46,7 +46,7 @@
     <ClInclude Include="appdata\il2cpp-types-ptr.h" />
     <ClInclude Include="user\Main.hpp" />
     <ClInclude Include="framework\pch-il2cpp.h" />
-    <ClInclude Include="utils\utils.h" />
     <ClInclude Include="user\RigbarthCommands.hpp" />
+    <ClInclude Include="user\logging.hpp" />
   </ItemGroup>
 </Project>

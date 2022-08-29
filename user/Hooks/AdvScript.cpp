@@ -1,6 +1,5 @@
 #include "helpers.h"
 #include "il2cpp-appdata.h"
-#include "utils.h"
 #include <iostream>
 #include <format>
 #include <filesystem>
@@ -14,6 +13,7 @@
 #include <bit>
 #include "Constants.hpp"
 #include "AdvCommands.hpp"
+#include <boost/algorithm/string/predicate.hpp>
 
 using json = nlohmann::json;
 using namespace app;
@@ -30,13 +30,13 @@ namespace advScript
 		auto addMethodInfo = __this->fields.SubEventDatas->klass->vtable.Add.method;
 		auto type = Type_GetType_2(reinterpret_cast<String*>(il2cpp_string_new("SubEventMasterDataBase, Assembly-CSharp")), nullptr);
 
-		auto dir = std::filesystem::absolute(std::format("{}/SubEventData", Constants::RigbarthPath));
+		auto dir = std::filesystem::absolute(std::format("{}/SubEventData", Constants::PLUGIN_NAME));
 		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator::recursive_directory_iterator(dir))
 		{
 			if (dirEntry.is_regular_file())
 			{
 				auto path = dirEntry.path();
-				if (utils::string::iequals(path.extension().generic_string(), ".json"))
+				if (boost::iequals(path.extension().generic_string(), ".json"))
 				{
 					std::ifstream file(path);
 					auto json = json::parse(file, nullptr, false);

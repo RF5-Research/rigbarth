@@ -5,8 +5,39 @@
 
 namespace RigbarthCommands
 {
+	void IfTimeZoneGotoStepNext(app::AdvMain* self, app::NpcController* npc)
+	{
+		auto args = self->fields.Cmd.Arg;
+		auto timeManager = app::SingletonMonoBehaviour_1_TimeManager__get_Instance(*app::SingletonMonoBehaviour_1_TimeManager__get_Instance__MethodInfo);
+		auto time = app::TimeManager_get_TimeZone(timeManager, nullptr);
+		if (time == static_cast<app::TimeZone__Enum>(args->vector[0]))
+		{
+			auto eventControllerBase = app::SingletonMonoBehaviour_1_EventControllerBase__get_Instance(*app::SingletonMonoBehaviour_1_EventControllerBase__get_Instance__MethodInfo);
+			app::EventControllerBase_SetNextNpcEventStep_1(eventControllerBase, args->vector[1], nullptr);
+			self->fields.scriptwork->fields.commandIndex = self->fields.scriptwork->fields.commandNum;
+		}
+	}
+
+	void IfNPCLifecycleStateGotoStepNext(app::AdvMain* self, app::NpcController* npc)
+	{
+
+		auto args = self->fields.Cmd.Arg;
+		auto npcDataManager = app::SingletonMonoBehaviour_1_NpcDataManager__get_Instance(*app::SingletonMonoBehaviour_1_NpcDataManager__get_Instance__MethodInfo);
+		auto npcData = app::NpcDataManager_GetNpcData_1(npcDataManager, static_cast<app::NPCID__Enum>(args->vector[0]), nullptr);
+		auto state = app::NpcData_get_CurrentLifecycleState(npcData, nullptr);
+		
+		if (state == static_cast<app::LifecycleState__Enum>(args->vector[1]))
+		{
+			auto eventControllerBase = app::SingletonMonoBehaviour_1_EventControllerBase__get_Instance(*app::SingletonMonoBehaviour_1_EventControllerBase__get_Instance__MethodInfo);
+			app::EventControllerBase_SetNextNpcEventStep_1(eventControllerBase, args->vector[2], nullptr);
+			self->fields.scriptwork->fields.commandIndex = self->fields.scriptwork->fields.commandNum;
+		}
+	}
+
+	/*CurrentLifecycleState*/
 	//npcdata.StandbyAnimState Is Sleeping
 	//Morning and Night dialogue
+	//CurrentLifecycleState
 	void IfInNPCFOVGotoStepNext(app::AdvMain* self, app::NpcController* npc)
 	{
 		auto args = self->fields.Cmd.Arg;
@@ -42,14 +73,14 @@ namespace RigbarthCommands
 						pos.z - actorPos.z,
 					};
 					canSeePlayer = !app::Physics_Raycast_1(actorPos, dir, app::Vector3_Distance(actorPos, pos, nullptr), wallLayer.m_Mask, nullptr);
-					if (canSeePlayer)
-					{
-						printf("Can see player\n");
-					}
-					else
-					{
-						printf("Cannot see player\n");
-					}
+					//if (canSeePlayer)
+					//{
+					//	printf("Can see player\n");
+					//}
+					//else
+					//{
+					//	printf("Cannot see player\n");
+					//}
 				}
 			}
 		}
@@ -65,5 +96,9 @@ namespace RigbarthCommands
 	void Subscribe()
 	{
 		AdvCommands::SubscribeCommand(600, &IfInNPCFOVGotoStepNext);
+		AdvCommands::SubscribeCommand(601, &IfNPCLifecycleStateGotoStepNext);
+		AdvCommands::SubscribeCommand(602, &IfTimeZoneGotoStepNext);
+
+
 	}
 }

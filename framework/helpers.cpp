@@ -1,8 +1,5 @@
 // Generated C++ file by Il2CppInspector - http://www.djkaty.com - https://github.com/djkaty
 // Helper functions
-#include "pch-il2cpp.h"
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
 #include <string>
 #include <codecvt>
 #include "helpers.h"

@@ -3,6 +3,7 @@
   "name": "rigbarth",
   "version": "1.0.0",
   "dependencies": [
+    "fmt",
     "polyhook2",
     "minhook",
     "nlohmann-json",
@@ -13,9 +14,14 @@
         "dx11-binding",
         "win32-binding"
       ]
-    }
+    },
+    "boost-algorithm"
   ],
   "overrides": [
+    {
+      "name": "fmt",
+      "version": "9.0.0"
+    },
     {
       "name": "polyhook2",
       "version": "2022-03-01"
@@ -31,7 +37,12 @@
     {
       "name": "imgui",
       "version": "1.86"
+    },
+    {
+      "name": "boost-algorithm",
+      "version": "1.79.0"
     }
+
   ],
   "builtin-baseline": "8b14e7e8729c532b7c2be9e603b7ee886b62db6b"
 }

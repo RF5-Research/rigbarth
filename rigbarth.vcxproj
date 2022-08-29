@@ -38,9 +38,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="kiero\kiero.cpp" />
-    <ClCompile Include="user\AdvCommands.cpp" />
     <ClCompile Include="user\Constants.cpp" />
+    <ClCompile Include="user\kiero.cpp" />
+    <ClCompile Include="user\AdvCommands.cpp" />
     <ClCompile Include="user\DebugMenu.cpp" />
     <ClCompile Include="user\Hooks\AdvMain.cpp" />
     <ClCompile Include="user\Hooks\AdvScript.cpp" />
@@ -51,9 +51,9 @@
     <ClCompile Include="user\Hooks\Hooks.cpp" />
     <ClCompile Include="user\Hooks\NpcDataManager.cpp" />
     <ClCompile Include="user\Hooks\ScriptWork.cpp" />
+    <ClCompile Include="user\logging.cpp" />
     <ClCompile Include="user\Main.cpp" />
     <ClCompile Include="user\RigbarthCommands.cpp" />
-    <ClCompile Include="utils\string.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="appdata\il2cpp-api-functions.h" />
@@ -66,7 +66,7 @@
     <ClInclude Include="framework\il2cpp-appdata.h" />
     <ClInclude Include="framework\il2cpp-init.h" />
     <ClInclude Include="framework\pch-il2cpp.h" />
-    <ClInclude Include="kiero\kiero.h" />
+    <ClInclude Include="user\kiero.h" />
     <ClInclude Include="user\Constants.hpp" />
     <ClInclude Include="user\DebugMenu.hpp" />
     <ClInclude Include="user\AdvCommands.hpp" />
@@ -78,9 +78,9 @@
     <ClInclude Include="user\Hooks\Hooks.hpp" />
     <ClInclude Include="user\Hooks\NpcDataManager.hpp" />
     <ClInclude Include="user\Hooks\ScriptWork.hpp" />
+    <ClInclude Include="user\logging.hpp" />
     <ClInclude Include="user\Main.hpp" />
     <ClInclude Include="user\RigbarthCommands.hpp" />
-    <ClInclude Include="utils\utils.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <!--<VCProjectVersion>16.0</VCProjectVersion>-->
@@ -231,7 +231,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch-il2cpp.h</PrecompiledHeaderFile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(ProjectDir)kiero;$(ProjectDir)appdata;$(ProjectDir)user;$(ProjectDir)utils;$(ProjectDir)framework;$(ProjectDir)imgui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)appdata;$(ProjectDir)user;$(ProjectDir)framework;$(ProjectDir)imgui</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -258,7 +258,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch-il2cpp.h</PrecompiledHeaderFile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(ProjectDir)kiero;$(ProjectDir)appdata;$(ProjectDir)user;$(ProjectDir)utils;$(ProjectDir)framework;$(ProjectDir)imgui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)appdata;$(ProjectDir)user;$(ProjectDir)framework;$(ProjectDir)imgui</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <WholeProgramOptimization>true</WholeProgramOptimization>

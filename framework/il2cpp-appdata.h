@@ -4,8 +4,6 @@
 #pragma once
 
 #include <cstdint>
-#include "pch-il2cpp.h"
-//
 //// Application-specific types
 //#include "il2cpp-types.h"
 //

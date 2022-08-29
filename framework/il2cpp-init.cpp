@@ -1,8 +1,6 @@
 // Generated C++ file by Il2CppInspector - http://www.djkaty.com - https://github.com/djkaty
 // IL2CPP application initializer
 
-#include "pch-il2cpp.h"
-
 #include "il2cpp-appdata.h"
 #include "il2cpp-init.h"
 #include "helpers.h"

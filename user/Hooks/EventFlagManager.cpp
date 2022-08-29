@@ -1,10 +1,11 @@
-#include <utils.h>
+#include <boost/algorithm/string/predicate.hpp>
 #include <Constants.hpp>
 #include <polyhook2/Detour/x64Detour.hpp>
 #include <polyhook2/CapstoneDisassembler.hpp>
 #include <nlohmann/json.hpp>
 #include "Enums.hpp"
 #include "il2cpp-appdata.h"
+#include <logging.hpp>
 
 using json = nlohmann::json;
 
@@ -18,19 +19,19 @@ namespace Hooks::EventFlagManager
 			auto pos = Enums::GameFlagData.find(value);
 			if (pos != Enums::GameFlagData.end())
 			{
-				printf("Resolved `%s`: `%s`'s `%s` GameDataFlag\n", scriptName, fieldName, value.c_str());
+				LOG_INFO("Resolved Script `{}`: `{}`'s `{}` GameDataFlag", scriptName, fieldName, value);
 				*data = pos->second;
 			}
 			else
 			{
-				printf("Failed to resolve %s: `%s`'s `%s` GameDataFlag\n", scriptName, fieldName, value.c_str());
+				LOG_WARNING("Failed to resolve Script `{}`: `{}`'s `{}` GameDataFlag", scriptName, fieldName, value);
 			}
 		}
 	}
 
 	void LoadEventUnlockData(app::EventFlagManager* eventFlagManager)
 	{
-		auto dir = std::filesystem::absolute(std::format("{}/EventUnlockData", Constants::RigbarthPath));
+		auto dir = std::filesystem::absolute(std::format("{}/EventUnlockData", Constants::PLUGIN_NAME));
 		auto eventUnlockFlagData = eventFlagManager->fields.EventUnlockFlagDatas->fields.datas;
 		auto index = static_cast<int32_t>(app::EventScriptID__Enum::Max);
 
@@ -58,13 +59,13 @@ namespace Hooks::EventFlagManager
 				if (dirEntry.is_regular_file())
 				{
 					auto path = dirEntry.path();
-					if (utils::string::iequals(path.extension().generic_string(), ".json"))
+					if (boost::iequals(path.extension().generic_string(), ".json"))
 					{
 						std::ifstream file(path);
 						auto json = json::parse(file, nullptr, false);
 						if (json.is_discarded())
 						{
-							printf("Invalid JSON: %s\n", path.generic_string().c_str());
+							LOG_ERROR("Invalid JSON: {}", path.generic_string());
 							continue;
 						}
 						for (int i = 0; i < json.size(); i++)
@@ -79,7 +80,7 @@ namespace Hooks::EventFlagManager
 							auto pos = Enums::EventScriptID.find(scriptName);
 							if (pos != Enums::EventScriptID.end())
 							{
-								printf("WARNING: Found duplicate EventScript: %s\n", scriptName.c_str());
+								LOG_WARNING("Found duplicate EventScript: %s", scriptName);
 								item->at(ScriptIdFieldName) = pos->second;
 							}
 							//If not, continue

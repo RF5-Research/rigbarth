@@ -1,9 +1,10 @@
 #include <Constants.hpp>
-#include <utils.h>
 #include <polyhook2/Detour/x64Detour.hpp>
 #include <polyhook2/CapstoneDisassembler.hpp>
 #include "il2cpp-appdata.h"
 #include <nlohmann/json.hpp>
+#include <boost/algorithm/string/predicate.hpp>
+#include <logging.hpp>
 
 using json = nlohmann::json;
 
@@ -38,19 +39,19 @@ namespace Hooks::NpcDataManager
 
 	void LoadMarriagableCandidates()
 	{
-		auto dir = std::filesystem::absolute(std::format("{}/MarriagableCandidates", Constants::RigbarthPath));
+		auto dir = std::filesystem::absolute(std::format("{}/MarriagableCandidates", Constants::PLUGIN_NAME));
 		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator::recursive_directory_iterator(dir))
 		{
 			if (dirEntry.is_regular_file())
 			{
 				auto path = dirEntry.path();
-				if (utils::string::iequals(path.extension().generic_string(), ".json"))
+				if (boost::iequals(path.extension().generic_string(), ".json"))
 				{
 					std::ifstream file(path);
 					auto json = json::parse(file, nullptr, false);
 					if (json.is_discarded())
 					{
-						printf("Invalid JSON: %s\n", path.generic_string().c_str());
+						LOG_ERROR("Invalid JSON: %s", path.generic_string());
 						continue;
 					}
 					for (int i = 0; i < json.size(); i++)
